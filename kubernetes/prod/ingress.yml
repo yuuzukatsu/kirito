@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod-cloudflare
+  name: ingress-kirito
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: sao.bm.co.id
+      http:
+        paths:
+          - backend:
+              service:
+                name: kirito
+                port:
+                  number: 8080
+            path: /
+            pathType: Prefix
+  tls:
+    - hosts:
+        - sao.bm.co.id
+      secretName: sao.bm.co.id-tls

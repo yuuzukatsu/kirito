@@ -1,0 +1,29 @@
+1. One day, your “Kirito” becomes a high traffic service that runs on production that is
+accessed publicly by the end user. But sometimes the crashlytics says your endpoint
+returns a 5xx error. What is your way of figuring out the root cause?
+
+- first thing i will check is what kind 5xx error is this. is it because of the load balancer ? or is it because of the ingress ? 
+  or maybe the app itself return 5xx error ?
+  
+  say the load balancer is the one returning 5xx error, i will check is my worker online ? is it reachable ? 
+  if there's a healthcheck, could it cause the load balancer to assume the worker is down ?
+  
+  if not the load balancer, is it ingress ? is the ingress currently running ? is it pointing to the correct service ? 
+  or maybe the ssl certificate is expired ?
+  
+  if not the ingress, maybe the application isn't running ? try checking the app logs. 
+  most of the time the cause of problem can be found here
+
+2. Once you found the root cause, what is your resolution to resolve the issue so it won’t
+happen in the future?
+- most of the time, the issue is because our server or service is overloaded. this can be mitigated by 
+  (if the apps support it) adding more pods and configuring horizontal pods autoscaler or by adding more worker nodes
+  it could be the database is the one overloaded. depending on the database we use, we can add 
+  more database instance (horizontal scaling). if not possible, we should schedule to increase database spec (vertical scale) or 
+  (if possible) optimize database query and database structure
+
+3. Mention and describe all tools that you use to help to trace and resolve the issue
+- for kubernetes cluster, most of the time i use RKE as the kubernetes engine. For the Kubernetes "GUI" i use Rancher. 
+  In rancher i can keep track the whole kubernetes configuration easily and i can easily check deployment/pod logs and which deployment is problematic
+  for resource monitoring, im using grafana-prometheus stack
+  

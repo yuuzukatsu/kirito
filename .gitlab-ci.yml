@@ -1,0 +1,34 @@
+variables:
+  KUBE_CONTEXT_PROD: bm-registry/kubernetes-agent-config:prod-agent
+  NAMESPACE_PROD: aincrad
+
+stages:      
+  - build
+  - deploy
+
+### PROD
+
+build-job-prod: 
+  stage: build
+  only:
+    - main
+  tags:
+    - registry-runner
+  script:
+    - docker build -t registry.bm/kirito:latest .   
+    - docker push registry.bm/kirito:latest
+
+deploy-job-prod:
+  stage: deploy
+  only:
+    - main
+  tags:
+    - prod-runner
+  image:
+    name: bitnami/kubectl:latest
+    entrypoint: [""]
+  script:
+    # #Use gitlab kubernetes agent. so we can connect without puting kubeconfig in repo
+    # - kubectl config use-context "$KUBE_CONTEXT_PROD"
+    - kubectl --kubeconfig ./kubernetes/kubecontext.yml apply -n $NAMESPACE_PROD -f $CI_PROJECT_DIR/kubernetes/prod
+    - kubectl --kubeconfig ./kubernetes/kubecontext.yml rollout restart -n $NAMESPACE_PROD -f $CI_PROJECT_DIR/kubernetes/prod || true

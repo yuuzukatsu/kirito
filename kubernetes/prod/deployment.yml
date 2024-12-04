@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.34.0 (cbf2835db)
+  labels:
+    io.kompose.service: kirito
+  name: kirito
+spec:
+  selector:
+    matchLabels:
+      io.kompose.service: kirito
+  strategy:
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.34.0 (cbf2835db)
+      labels:
+        io.kompose.service: kirito
+    spec:
+      containers:
+        - imagePullPolicy: Always
+          # envFrom:
+          #   - prefix: ''
+          #     configMapRef:
+          #       name: configmap-kirito
+          #       optional: false
+          image: registry.bm/kirito:latest
+          name: kirito
+          resources:
+            requests:
+              cpu: 0.1
+              memory: 1Gi
+            limits:
+              cpu: 2
+              memory: 4Gi
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+      restartPolicy: Always
