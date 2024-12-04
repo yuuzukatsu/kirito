@@ -1,5 +1,5 @@
 variables:
-  KUBE_CONTEXT_PROD: bm-registry/kubernetes-agent-config:prod-agent
+  KUBE_CONTEXT_PROD: bm-repo/kubernetes-agent-config:prod-agent
   NAMESPACE_PROD: aincrad
 
 stages:      
